@@ -187,7 +187,9 @@ ollama pull llama3.2:1b
 ```
 
 ### ❌ BM25 or Qdrant errors
+
 Check that your indexes exist in the paths defined in config.yaml.
+
 ---
 
 ## 🧩 RAG Pipeline Diagram (ASCII)
