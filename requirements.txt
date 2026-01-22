@@ -1,0 +1,29 @@
+# Core dependencies
+fastapi
+uvicorn
+jinja2
+pydantic
+numpy
+sentence-transformers
+python-dotenv
+requests
+
+# LLM providers
+
+openai
+
+
+
+
+
+# Vector DB clients
+
+qdrant-client
+
+
+
+# UI frameworks
+
+streamlit
+
+

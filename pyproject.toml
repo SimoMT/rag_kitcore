@@ -1,0 +1,20 @@
+[project]
+requires-python = ">= 3.12"
+name = "rag_kitcore"
+version = "0.1.0"
+description = "Production-grade RAG framework template"
+authors = [{ name = " " }]
+
+dependencies = [
+    "fastapi",
+    "uvicorn",
+    "pydantic",
+    "numpy",
+    "sentence-transformers",
+    "python-dotenv",
+    "jinja2",
+    "requests"
+]
+
+[tool.ruff]
+line-length = 100
