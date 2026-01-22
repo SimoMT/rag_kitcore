@@ -1,7 +1,7 @@
 import numpy as np
 
 from vectorstore.embeddings import EmbeddingModel
-from vectorstore.vector_db import BaseVectorDB
+from vectorstore.qdrant_store import BaseVectorDB
 
 
 class Retriever:

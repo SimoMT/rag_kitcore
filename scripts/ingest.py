@@ -1,27 +1,46 @@
-from vectorstore.loaders import load_text_file
-from vectorstore.chunker import chunk_text
-from vectorstore.embeddings import EmbeddingModel
-from vectorstore.vector_db import get_vector_db
-from vectorstore.index_builder import build_index
-from config import load_config
-from utils.helpers import ensure_dir
+#!/usr/bin/env python3
+
+import sys
+from logsys import get_logger
+from rag.indexing.pipeline import run_indexing
+from core.exceptions import (
+    DocumentConversionError,
+    ChunkingError,
+    VectorStoreError,
+    RAGError,
+)
+
+logger = get_logger(__name__)
 
 
-def main():
-    config = load_config()
-    embedder = EmbeddingModel(config.embeddings.model_name)
-    vectordb = get_vector_db(config)
+def main() -> int:
+    logger.info("Starting ingestion pipeline")
 
-    ensure_dir("data")
+    try:
+        run_indexing()
+        logger.info("Ingestion completed successfully")
+        return 0
 
-    raw_text = load_text_file("data/sample.txt")
-    chunks = chunk_text(raw_text)
+    except DocumentConversionError as exc:
+        logger.error("Document conversion failed: %s", exc)
+        return 1
 
-    docs = [{"text": c, "id": i} for i, c in enumerate(chunks)]
-    build_index(docs, embedder, vectordb)
+    except ChunkingError as exc:
+        logger.error("Chunking failed: %s", exc)
+        return 2
 
-    print("Index built successfully")
+    except VectorStoreError as exc:
+        logger.error("Vectorstore operation failed: %s", exc)
+        return 3
+
+    except RAGError as exc:
+        logger.error("RAG pipeline error: %s", exc)
+        return 4
+
+    except Exception as exc:
+        logger.exception("Unexpected error: %s", exc)
+        return 99
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())

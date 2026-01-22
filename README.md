@@ -1,224 +1,375 @@
-# 🧱 RAG KitCore
+# 🔍 Local RAG Assistant
 
-A modular Retrieval‑Augmented Generation (RAG) application built with FastAPI, a pluggable vectorstore, and a clean, extensible architecture.
+A fully local, privacy‑preserving Retrieval‑Augmented Generation (RAG) application built with Streamlit, Qdrant, BM25, a cross‑encoder reranker, and a lightweight LLM running through Ollama.
 
-This project was generated using the RAG KitCore Cookiecutter template, providing a production‑ready foundation for building scalable LLM‑powered systems.
+The system allows you to query your documents using hybrid search and receive structured, context‑aware answers.
 
 ---
 
 ## 🚀 Features
 
-### 🔧 Architecture
+- **Hybrid Retrieval** 
+Combines BM25 lexical search with vector search via Qdrant.
 
-- Clean, domain‑driven layout
+- **Reranking**  
+Uses a MiniLM cross‑encoder to reorder retrieved documents by relevance.
 
-- Config‑driven behavior (config.yaml)
-- Structured logging
-- Modular components:
-  - `rag/` — RAG pipeline
+- **Local LLM**  
+Runs entirely on your machine using Ollama (no cloud calls, no API keys).
 
-  - `vectorstore/` — vector DB abstraction
-  - `webapp/` — FastAPI backend
-  - `scripts/` — ingestion utilities
-  - `utils/` — helpers
-  - `tests/` — pytest suite
+- **Embeddings**  
+Uses sentence-transformers/all-MiniLM-L6-v2 for vector indexing.
 
-🧠 RAG Pipeline
+- **Streamlit Web UI**  
+Simple, interactive interface for querying your knowledge base.
 
-- Document ingestion
+- **Config‑driven**  
+All settings stored in config.yaml.
 
-- Chunking
-
-- Embedding
-
-- Vectorstore indexing
-
-- Retrieval
-
-- Prompt construction
-
-- LLM wrapper
-
-🗄️ Vectorstore
-
-Depending on your project configuration:
-
-- FAISS‑like in‑memory store
-
-- Qdrant (Docker)
-
-- Weaviate (Docker)
-
-🧩 LLM Providers
-
-- OpenAI
-
-- Azure OpenAI
-
-- Ollama
-
-- Dummy (offline testing)
-
-🐳 Docker Support
-
-- Optional Dockerized stack
-
-- Auto‑configured vector DB containers
-
-- FastAPI container
-
-📦 Installation
-
-1. Create a virtual environment
-```bash
-python -m venv .venv
-source .venv/bin/activate   # Linux/macOS
-.venv\Scripts\activate      # Windows
-```
-2. Install dependencies
-```bash
-pip install -r requirements.txt
-```
-⚙️ Configuration
-
-All runtime settings are controlled via:
-```bash
-config.yaml
-```
-You can configure:
-
-- LLM provider
-
-- Embedding model
-
-- Vectorstore backend
-
-- Chunking parameters
-
-- API keys
-
-- Paths
-
-Environment variables override config values when present.
+- **Private by design**  
+No external services required.
 
 ---
 
-## 📥 Ingest Documents
+## 📦 Requirements
 
-Place your documents inside:
-```bash
-data/
-```
-Then run:
-```bash
-python scripts/ingest.py
-```
-This will:
+### Software
+- Python 3.10+
 
-- load documents
+- Pip or uv
 
-- chunk them
+- Ollama installed and running
+https://ollama.com/download
 
-- embed them
+- A local LLM model (e.g., llama3.2:1b)
 
-- store them in the vectorstore
+- Qdrant (file‑based mode, no server required)
+
+### Hardware
+* CPU‑only is sufficient
+
+* ~3 GB free disk space (Ollama + model)
 
 ---
 
+## 🧠 Installation
 
-## 🚀 Run the API
-
-### Development mode
+### 1. Clone the repository
 ```bash
-uvicorn webapp.api:app --reload
+git clone <your-repo-url>
+cd <your-project-folder>
 ```
 
-Open:
+### 2. Install Python dependencies
 ```bash
-http://localhost:8000
+pip install -r requirements.txt>
 ```
-Production mode (example)
+
+### 3. Install Ollama
+Download from:
+https://ollama.com/download
+
+### 4. Pull a lightweight model
 ```bash
-uvicorn webapp.api:app --host 0.0.0.0 --port 8000
+ollama pull llama3.2:1b
+```
+
+5. Configure the application
+Edit `config/config.yaml`:
+```bash
+llm_provider: ollama
+llm_model: llama3.2:1b
+
+embedding_model: sentence-transformers/all-MiniLM-L6-v2
+reranker_model: cross-encoder/ms-marco-MiniLM-L-6-v2
+
+bm25_index: data/bm25_index
+qdrant_url: http://localhost:6333
+collection_name: rag_collection
+
 ```
 
 ---
 
+## 🗂️ Preparing the Indexes
 
-## 🐳 Run with Docker (if enabled)
+#### BM25
+Ensure the BM25 index is stored in:
+
 ```bash
-docker compose up --build
+data/bm25_index
 ```
-This will start:
-
-- FastAPI backend
-
-- Vectorstore container (Qdrant/Weaviate if selected)
+#### Qdrant
+The application uses Qdrant in local file‑based mode, so no Docker or external service is required.
 
 ---
 
+## ▶️ Running the Application
 
-## 🧪 Testing
-
-Run the test suite:
+Make sure Ollama is running:
 ```bash
-pytest -q
+ollama serve
+```
+
+Then start the Streamlit app:
+```bash
+streamlit run webapp/streamlit_app.py
+```
+
+The UI will be available at:
+```bash
+http://localhost:8501
 ```
 
 ---
 
-## 📁 Project Structure
+## 🧪 Quick Test
+Try a simple query:
 
+```bash
+What is the description for ...?
 ```
-rag_kitcore/
+If the system returns a precise value extracted from your documents, the RAG pipeline is working correctly.
+
+---
+
+## 🧱 Project Structure
+
+```bash
+.
 ├── config/
-├── data/
-├── logging/
-├── rag/
-├── scripts/
-│   └── ingest.py
-├── tests/
-├── utils/
-├── vectorstore/
-├── webapp/
-│   ├── api.py
-│   ├── routers/
-│   ├── templates/   (if UI enabled)
-│   └── static/      (if UI enabled)
+│   └── config.yaml                # Central configuration (LLM, embeddings, paths)
 │
-├── config.yaml
-├── requirements.txt
-├── Dockerfile
-├── docker-compose.yml
+├── core/
+│   ├── settings.py                # Loads config.yaml into a typed Settings object
+│   └── resources.py               # Initializes LLM, embeddings, reranker, vector store
+│
+├── rag/
+│   ├── retrievers/
+│   │   ├── hybrid.py              # Hybrid retrieval logic (BM25 + Qdrant + reranker)
+│   │   └── bm25.py                # BM25 index loading (if separated)
+│   │
+│   ├── pipelines/
+│   │   └── rag_pipeline.py        # End‑to‑end RAG pipeline (retrieve → rerank → generate)
+│   │
+│   └── utils/
+│       └── text_cleaning.py       # Optional preprocessing utilities
+│
+├── data/
+│   ├── bm25_index/                # Serialized BM25 index
+│   └── qdrant/                    # Local Qdrant storage (file‑based)
+│
+├── webapp/
+│   ├── streamlit_app.py           # Main Streamlit UI
+│   └── ui_helpers.py              # Formatting, layout, chat components
+│
 └── README.md
+
 ```
 
 ---
+## 🔧 Troubleshooting
 
-## 🧩 Extending the System
+### ❌ “Connection refused” when generating answers
 
-You can easily extend:
+Ollama is not running.
 
-### Add a new vectorstore
+Start it:
+```bash
+ollama serve
+```
 
-Create a new module under `vectorstore/` implementing the base interface.
+### ❌ “Model not found”
 
-### Add a new LLM provider
+You need to pull the model:
+```bash
+ollama pull llama3.2:1b
+```
 
-Add a wrapper under `rag/llm_providers/`.
-
-### Add new ingestion logic
-
-Modify or extend `scripts/ingest.py`.
-
-### Add new API routes
-
-Create routers under `webapp/routers/`.
-
+### ❌ BM25 or Qdrant errors
+Check that your indexes exist in the paths defined in config.yaml.
 ---
 
-## 🤝 Contributing
+## 🧩 RAG Pipeline Diagram (ASCII)
 
-This project follows the structure and conventions of the RAG KitCore template.Feel free to extend it based on your needs.
+The system uses a hybrid retrieval architecture combining BM25, vector search, and reranking before passing the final context to a local LLM. The diagram below summarizes the full flow:
 
----
+```text
+                         ┌──────────────────────────┐
+                         │        User Query        │
+                         └─────────────┬────────────┘
+                                       │
+                                       ▼
+                         ┌──────────────────────────┐
+                         │     Preprocessing        │
+                         │ (normalization, cleanup) │
+                         └─────────────┬────────────┘
+                                       │
+                                       ▼
+        ┌──────────────────────────────────────────────────────────────┐
+        │                         RETRIEVAL                            │
+        └──────────────────────────────────────────────────────────────┘
+                                       │
+         ┌─────────────────────────────┼──────────────────────────────┐
+         ▼                             ▼                              ▼
+┌──────────────────┐        ┌──────────────────┐          ┌──────────────────┐
+│   BM25 Search    │        │ Vector Search    │          │   Metadata /     │
+│ (lexical match)  │        │   (Qdrant)       │          │  Filters (opt.)  │
+└─────────┬────────┘        └─────────┬────────┘          └─────────┬────────┘
+          │                             │                             │
+          └───────────────┬────────────┴───────────────┬─────────────┘
+                          ▼                            ▼
+                ┌──────────────────┐         ┌──────────────────┐
+                │  BM25 Results    │         │ Vector Results    │
+                └─────────┬────────┘         └─────────┬────────┘
+                          │                            │
+                          └───────────────┬────────────┘
+                                          ▼
+                         ┌──────────────────────────┐
+                         │   Hybrid Combination     │
+                         │ (weighted ensemble)      │
+                         └─────────────┬────────────┘
+                                       │
+                                       ▼
+                         ┌──────────────────────────┐
+                         │        Reranker          │
+                         │ (CrossEncoder MiniLM)    │
+                         └─────────────┬────────────┘
+                                       │
+                                       ▼
+                         ┌──────────────────────────┐
+                         │   Top‑K Final Context    │
+                         └─────────────┬────────────┘
+                                       │
+                                       ▼
+        ┌──────────────────────────────────────────────────────────────┐
+        │                         GENERATION                           │
+        └──────────────────────────────────────────────────────────────┘
+                                       │
+                                       ▼
+                         ┌──────────────────────────┐
+                         │      Local LLM (Ollama)  │
+                         │   e.g., llama3.2:1b      │
+                         └─────────────┬────────────┘
+                                       │
+                                       ▼
+                         ┌──────────────────────────┐
+                         │     Final Answer         │
+                         └──────────────────────────┘
+```
+
+
+```text
+                                ┌──────────────────────────────┐
+                                │        Streamlit UI          │
+                                │   webapp/streamlit_app.py    │
+                                └───────────────┬──────────────┘
+                                                │
+                                                ▼
+                                ┌──────────────────────────────┐
+                                │       RAG Pipeline           │
+                                │ rag/pipelines/rag_pipeline.py│
+                                └───────────────┬──────────────┘
+                                                │
+                                                ▼
+        ┌────────────────────────────────────────────────────────────────────────┐
+        │                                RETRIEVAL                               │
+        └────────────────────────────────────────────────────────────────────────┘
+                                                │
+                     ┌──────────────────────────┼──────────────────────────┐
+                     ▼                          ▼                          ▼
+        ┌──────────────────┐       ┌──────────────────────┐     ┌──────────────────────┐
+        │ BM25 Retriever   │       │ Qdrant Vector Store  │     │  Preprocessing Utils │
+        │ rag/retrievers/  │       │ core/resources.py    │     │ rag/utils/           │
+        │ bm25.py          │       │                      │     │ text_cleaning.py     │
+        └─────────┬────────┘       └────────────┬─────────┘     └────────────┬─────────┘
+                  │                             │                           │
+                  └───────────────┬─────────────┴──────────────┬────────────┘
+                                  ▼                            ▼
+                        ┌──────────────────┐         ┌──────────────────┐
+                        │ BM25 Results     │         │ Vector Results    │
+                        └─────────┬────────┘         └─────────┬────────┘
+                                  │                            │
+                                  └───────────────┬────────────┘
+                                                  ▼
+                                ┌──────────────────────────────┐
+                                │ Hybrid Combiner (weights)    │
+                                │ rag/retrievers/hybrid.py     │
+                                └───────────────┬──────────────┘
+                                                │
+                                                ▼
+                                ┌──────────────────────────────┐
+                                │   Reranker (MiniLM CE)       │
+                                │ core/resources.py            │
+                                └───────────────┬──────────────┘
+                                                │
+                                                ▼
+                                ┌──────────────────────────────┐
+                                │     Final Context (Top‑K)    │
+                                └───────────────┬──────────────┘
+                                                │
+                                                ▼
+        ┌────────────────────────────────────────────────────────────────────────┐
+        │                               GENERATION                               │
+        └────────────────────────────────────────────────────────────────────────┘
+                                                │
+                                                ▼
+                                ┌──────────────────────────────┐
+                                │   Local LLM via Ollama       │
+                                │ core/resources.py            │
+                                └──────────────────────────────┘
+```
+
+## 🔄 Sequence Diagram — Request Flow
+```text
+User
+ │
+ │ 1. Enters query
+ ▼
+Streamlit UI (streamlit_app.py)
+ │
+ │ 2. Sends query to RAG pipeline
+ ▼
+RAG Pipeline (rag_pipeline.py)
+ │
+ │ 3. Preprocess query
+ ▼
+Hybrid Retriever (hybrid.py)
+ │
+ │ 4. BM25 search
+ ▼
+BM25 Index (data/bm25_index)
+ │
+ │ 5. Return lexical matches
+ ▼
+Hybrid Retriever
+ │
+ │ 6. Vector search
+ ▼
+Qdrant (data/qdrant/)
+ │
+ │ 7. Return vector matches
+ ▼
+Hybrid Retriever
+ │
+ │ 8. Combine + weight results
+ ▼
+Reranker (MiniLM CrossEncoder)
+ │
+ │ 9. Score and reorder documents
+ ▼
+RAG Pipeline
+ │
+ │ 10. Select Top‑K context
+ ▼
+Local LLM (Ollama)
+ │
+ │ 11. Generate final answer
+ ▼
+Streamlit UI
+ │
+ │ 12. Display answer to user
+ ▼
+User
+
+```

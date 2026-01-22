@@ -1,29 +1,51 @@
-# Core dependencies
+# -------------------------
+# Core framework
+# -------------------------
 fastapi
 uvicorn
 jinja2
 pydantic
-numpy
-sentence-transformers
+pydantic-settings
 python-dotenv
+pyyaml
+
+# -------------------------
+# Data & utilities
+# -------------------------
+numpy
 requests
 
-# LLM providers
+# -------------------------
+# LLMs & embeddings
+# -------------------------
+sentence-transformers
+transformers
+langchain
+langchain-core
+langchain-community
+langchain-ollama
+langchain-text-splitters
+langchain-huggingface
+langchain-qdrant
+hf_xet
 
-openai
-
-
-
-
-
-# Vector DB clients
-
+# -------------------------
+# Vector DB
+# -------------------------
 qdrant-client
 
+# -------------------------
+# Retrieval
+# -------------------------
+rank-bm25
 
+# -------------------------
+# Document conversion
+# -------------------------
+python-docx
+docling
 
-# UI frameworks
-
+# -------------------------
+# UI
+# -------------------------
 streamlit
-
-

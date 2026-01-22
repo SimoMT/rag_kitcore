@@ -1,19 +1,33 @@
 [project]
-requires-python = ">= 3.12"
 name = "rag_kitcore"
 version = "0.1.0"
-description = "Production-grade RAG framework template"
-authors = [{ name = " " }]
+description = "Local, privacy-first RAG framework with hybrid retrieval and Ollama"
+requires-python = ">=3.12"
+authors = [{ name = "Simone" }]
 
 dependencies = [
-    "fastapi",
-    "uvicorn",
-    "pydantic",
-    "numpy",
+    # Core RAG stack
     "sentence-transformers",
+    "qdrant-client",
+    "rank-bm25",
+    "langchain",
+    "langchain-community",
+    "langchain-core",
+    "langchain-ollama",
+    "langchain-openai",
+
+    # Embeddings & reranker
+    "numpy",
+    "scikit-learn",
+
+    # Web UI
+    "streamlit",
+
+    # Config & utilities
+    "pydantic",
     "python-dotenv",
-    "jinja2",
-    "requests"
+    "pyyaml",
+    "requests",
 ]
 
 [tool.ruff]

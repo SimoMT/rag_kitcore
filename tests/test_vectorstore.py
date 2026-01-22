@@ -1,4 +1,4 @@
-from vectorstore.vector_db import InMemoryFaissLikeDB
+from vectorstore.qdrant_store import InMemoryFaissLikeDB
 import numpy as np
 
 

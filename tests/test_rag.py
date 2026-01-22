@@ -1,4 +1,4 @@
-from rag.pipeline import RAGPipeline
+from rag.indexing.pipeline import RAGPipeline
 
 
 class DummyRetriever:
