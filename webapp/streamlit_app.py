@@ -19,7 +19,7 @@ from webapp.ui_helpers import (
     append_message,
 )
 
-
+settings = Settings.from_yaml()
 
 # -------------------------------------------------
 # Page config
@@ -35,7 +35,7 @@ st.set_page_config(
 # -------------------------------------------------
 @st.cache_resource(show_spinner=False)
 def init_backend():
-    resources = load_resources()
+    resources = load_resources(settings)
     llm = resources["llm"]
     chain = build_rag_chain(llm, resources)
     return resources, chain
@@ -49,7 +49,7 @@ with st.spinner("Caricamento modelli e indici..."):
 # -------------------------------------------------
 st.title("RAG AI Assistant")
 st.caption(
-    f"Modello LLM: **{settings.llm_model}** | Reranker: **{settings.reranker_model}**"
+    f"Modello LLM: **{settings.llm.model}** | Reranker: **{settings.models.reranker_model}**"
 )
 
 # -------------------------------------------------
