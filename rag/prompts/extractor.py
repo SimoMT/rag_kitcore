@@ -1,7 +1,3 @@
-from langchain_core.prompts import ChatPromptTemplate
-from langchain_core.output_parsers import StrOutputParser
-
-
 SYSTEM_TEMPLATE = """
 Sei un estrattore di dati tecnico di precisione.
 Il tuo unico compito è trovare informazioni esatte all'interno di tabelle Markdown.
@@ -21,18 +17,14 @@ DOMANDA UTENTE:
 """
 
 
-def build_prompt() -> ChatPromptTemplate:
-    """Create the structured prompt for the extraction task."""
-    return ChatPromptTemplate.from_messages([
-        ("system", SYSTEM_TEMPLATE),
-        ("human", HUMAN_TEMPLATE),
-    ])
-
-
-def build_chain(llm):
+def build_prompt():
     """
-    Build the LCEL chain:
-    prompt → llm → string parser
+    Returns a function that formats the extraction prompt.
+    This keeps the interface flexible and backend-agnostic.
     """
-    prompt = build_prompt()
-    return prompt | llm | StrOutputParser()
+    def formatter(question: str, context: str) -> str:
+        system_part = SYSTEM_TEMPLATE.format(context=context)
+        human_part = HUMAN_TEMPLATE.format(question=question)
+        return system_part + "\n" + human_part
+
+    return formatter

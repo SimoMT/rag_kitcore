@@ -13,7 +13,7 @@ class RAGPipeline:
     def __init__(self, llm, resources):
         self.llm = llm
         self.resources = resources
-        self.prompt_template = build_prompt()
+        self.prompt_fn = build_prompt()
 
     # -----------------------------
     # Retrieval
@@ -34,10 +34,7 @@ class RAGPipeline:
     # Build final prompt
     # -----------------------------
     def build_prompt(self, question, context):
-        return self.prompt_template.format(
-            question=question,
-            context=context,
-        )
+        return self.prompt_fn(question, context)
 
     # -----------------------------
     # Non-streaming generation
