@@ -1,3 +1,5 @@
+# rag/prompts/extractor.py
+
 SYSTEM_TEMPLATE = """
 Sei un estrattore di dati tecnico di precisione.
 Il tuo unico compito è trovare informazioni esatte all'interno di tabelle Markdown.
@@ -19,12 +21,13 @@ DOMANDA UTENTE:
 
 def build_prompt():
     """
-    Returns a function that formats the extraction prompt.
-    This keeps the interface flexible and backend-agnostic.
+    Returns a formatter function that builds the final prompt string.
+    This keeps the interface backend-agnostic and easy to extend.
     """
+
     def formatter(question: str, context: str) -> str:
         system_part = SYSTEM_TEMPLATE.format(context=context)
         human_part = HUMAN_TEMPLATE.format(question=question)
-        return system_part + "\n" + human_part
+        return f"{system_part}\n{human_part}"
 
     return formatter

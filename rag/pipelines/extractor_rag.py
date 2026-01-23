@@ -33,7 +33,7 @@ class RAGPipeline:
     # -----------------------------
     # Build final prompt
     # -----------------------------
-    def build_prompt(self, question, context):
+    def format_prompt(self, question, context):
         return self.prompt_fn(question, context)
 
     # -----------------------------
@@ -42,7 +42,7 @@ class RAGPipeline:
     def run(self, question):
         docs = self.retrieve(question)
         context = self.build_context(docs)
-        prompt = self.build_prompt(question, context)
+        prompt = self.format_prompt(question, context)
         return self.llm.generate(prompt)
 
     # -----------------------------
@@ -51,7 +51,7 @@ class RAGPipeline:
     def stream(self, question):
         docs = self.retrieve(question)
         context = self.build_context(docs)
-        prompt = self.build_prompt(question, context)
+        prompt = self.format_prompt(question, context)
 
         for chunk in self.llm.stream(prompt):
             yield chunk
