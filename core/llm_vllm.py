@@ -2,7 +2,10 @@ from openai import OpenAI
 
 class VLLMClient:
     def __init__(self, settings):
-        self.client = OpenAI(base_url=settings.backends.vllm.base_url, api_key="dummy")
+        self.client = OpenAI(
+            base_url=settings.backends.vllm.base_url,
+            api_key="dummy"
+        )
         self.model = settings.llm.model
         self.temperature = settings.llm.temperature
         self.max_tokens = settings.llm.max_tokens
