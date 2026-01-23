@@ -1,25 +1,24 @@
 import sys
 import os
+import time
+import streamlit as st
 
+# Ensure project root is in sys.path
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if ROOT not in sys.path:
     sys.path.append(ROOT)
 
-
-import time
-import streamlit as st
-
 from core.settings import Settings
-
-settings = Settings.from_yaml()
 from core.resources import load_resources
 from rag.pipelines.extractor_rag import build_rag_chain
-from webapp.ui_helpers import (
-    render_chat_history,
-    append_message,
-)
+from webapp.ui_helpers import render_chat_history, append_message
 
+
+# -------------------------------------------------
+# Load settings (entry point, so this is OK)
+# -------------------------------------------------
 settings = Settings.from_yaml()
+
 
 # -------------------------------------------------
 # Page config
@@ -29,6 +28,7 @@ st.set_page_config(
     layout="wide",
     page_icon="✈️"
 )
+
 
 # -------------------------------------------------
 # Load backend resources + RAG chain
@@ -44,6 +44,7 @@ def init_backend():
 with st.spinner("Caricamento modelli e indici..."):
     resources, chain = init_backend()
 
+
 # -------------------------------------------------
 # Header
 # -------------------------------------------------
@@ -52,10 +53,12 @@ st.caption(
     f"Modello LLM: **{settings.llm.model}** | Reranker: **{settings.models.reranker_model}**"
 )
 
+
 # -------------------------------------------------
 # Chat history
 # -------------------------------------------------
 render_chat_history()
+
 
 # -------------------------------------------------
 # User input
