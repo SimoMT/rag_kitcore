@@ -47,6 +47,17 @@ class BackendsConfig(BaseModel):
     ollama: BackendOllama
 
 
+class PromptSection(BaseModel):
+    system: str
+    human: str
+
+class PromptsConfig(BaseModel):
+    extractor: PromptSection
+    # qa: PromptSection
+    # summarizer: PromptSection
+    # etc.
+
+
 # -----------------------------
 # Main Settings
 # -----------------------------
@@ -58,11 +69,17 @@ class Settings(BaseSettings):
     models: ModelsConfig
     llm: LLMConfig
     backends: BackendsConfig
+    prompts: PromptsConfig
 
     model_config = SettingsConfigDict(env_file=".env")
 
     @classmethod
-    def from_yaml(cls, path: str = "config/config.yaml"):
+    def from_yaml(cls, path="config/config.yaml", prompts_path="config/prompts.yaml"):
         with open(path, "r") as f:
             data = yaml.safe_load(f)
+
+        with open(prompts_path, "r") as f:
+            prompts = yaml.safe_load(f)
+
+        data["prompts"] = prompts
         return cls(**data)
