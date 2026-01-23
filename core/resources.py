@@ -9,7 +9,9 @@ from langchain_qdrant import QdrantVectorStore
 from qdrant_client import QdrantClient
 from sentence_transformers import CrossEncoder
 
-from core.settings import settings
+from core.settings import Settings
+
+settings = Settings.from_yaml()
 
 
 # -------------------------------------------------

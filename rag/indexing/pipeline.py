@@ -1,6 +1,8 @@
 import os
 from logsys import get_logger
-from core.settings import settings
+from core.settings import Settings
+
+settings = Settings.from_yaml()
 from core.exceptions import DocumentConversionError
 
 from rag.indexing.cleaner import clean_markdown

@@ -9,7 +9,9 @@ if ROOT not in sys.path:
 import time
 import streamlit as st
 
-from core.settings import settings
+from core.settings import Settings
+
+settings = Settings.from_yaml()
 from core.resources import load_resources
 from rag.pipelines.extractor_rag import build_rag_chain
 from webapp.ui_helpers import (
