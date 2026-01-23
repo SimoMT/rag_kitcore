@@ -55,8 +55,6 @@ class PromptsConfig(BaseModel):
     extractor: PromptSection
     # qa: PromptSection
     # summarizer: PromptSection
-    # etc.
-
 
 # -----------------------------
 # Main Settings
