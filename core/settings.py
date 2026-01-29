@@ -1,50 +1,110 @@
-from pydantic_settings import BaseSettings, SettingsConfigDict
-from pydantic import Field
+import os
 import yaml
 
+from pydantic import BaseModel
+from pydantic_settings import BaseSettings, SettingsConfigDict
+
+
+
+# -----------------------------
+# Nested Config Models
+# -----------------------------
+
+class RagConfig(BaseModel):
+    chunk_size: int = 500
+    chunk_overlap: int = 50
+
+
+class PathsConfig(BaseModel):
+    data_dir: str = "data/"
+    bm25_index: str = "data/bm25_index"
+    qdrant_url: str = "http://localhost:6333"
+
+
+class VectorstoreConfig(BaseModel):
+    collection_name: str = "rag_collection"
+
+
+class ModelsConfig(BaseModel):
+    embedding_model: str
+    reranker_model: str
+
+
+class LLMConfig(BaseModel):
+    backend: str
+    model: str
+    temperature: float = 0.2
+    max_tokens: int = 1024
+
+
+class BackendVLLM(BaseModel):
+    base_url: str
+
+
+class BackendOllama(BaseModel):
+    base_url: str
+
+
+class BackendsConfig(BaseModel):
+    vllm: BackendVLLM
+    ollama: BackendOllama
+
+
+class PromptSection(BaseModel):
+    system: str
+    human: str
+
+class PromptsConfig(BaseModel):
+    extractor: PromptSection
+    # qa: PromptSection
+    # summarizer: PromptSection
+
+# -----------------------------
+# Main Settings
+# -----------------------------
+
 class Settings(BaseSettings):
-    # -----------------------------
-    # RAG
-    # -----------------------------
-    chunk_size: int = Field(default=500)
-    chunk_overlap: int = Field(default=50)
+    rag: RagConfig
+    paths: PathsConfig
+    vectorstore: VectorstoreConfig
+    models: ModelsConfig
+    llm: LLMConfig
+    backends: BackendsConfig
+    prompts: PromptsConfig
 
-    # -----------------------------
-    # Paths
-    # -----------------------------
-    data_dir: str = Field(default="data/")
-    bm25_index: str = Field(default="data/bm25_index")
-    qdrant_url: str = Field(default="http://localhost:6333")
-
-    # -----------------------------
-    # Vectorstore
-    # -----------------------------
-    collection_name: str = Field(default="rag_collection")
-
-    # -----------------------------
-    # Models
-    # -----------------------------
-    embedding_model: str = Field(default="sentence-transformers/all-MiniLM-L6-v2")
-    reranker_model: str = Field(default="cross-encoder/ms-marco-MiniLM-L-6-v2")
-    llm_provider: str = Field(default="ollama")
-    llm_model: str = Field(default="llama3.2:1b")
-
-    # -----------------------------
-    # Config
-    # -----------------------------
     model_config = SettingsConfigDict(env_file=".env")
 
     @classmethod
-    def from_yaml(cls, path: str = "config/config.yaml"):
+    def from_yaml(cls, path="config/config.yaml", prompts_path="config/prompts.yaml"):
         with open(path, "r") as f:
-            yaml_data = yaml.safe_load(f)
+            data = yaml.safe_load(f)
 
-        flat = {}
-        for section, values in yaml_data.items():
-            for key, value in values.items():
-                flat[key] = value
+        with open(prompts_path, "r") as f:
+            prompts = yaml.safe_load(f)
 
-        return cls(**flat)
+        data["prompts"] = prompts
+        return cls(**data)
+
+    @classmethod
+    def from_yaml_absolute_path(cls, path="config/config.yaml", prompts_path="config/prompts.yaml"):
+        with open(path, "r") as f:
+            data = yaml.safe_load(f)
+
+        with open(prompts_path, "r") as f:
+            prompts = yaml.safe_load(f)
+
+        data["prompts"] = prompts
+
+        settings = cls(**data)
+
+        config_dir = os.path.dirname(os.path.abspath(path))
+        project_root = os.path.dirname(config_dir)
 
 
-settings = Settings.from_yaml()
+        if not os.path.isabs(settings.paths.data_dir):
+            settings.paths.data_dir = os.path.join(project_root, settings.paths.data_dir)
+
+        if not os.path.isabs(settings.paths.bm25_index):
+            settings.paths.bm25_index = os.path.join(project_root, settings.paths.bm25_index)
+
+        return settings

@@ -10,6 +10,8 @@ from core.exceptions import (
     RAGError,
 )
 
+from core.settings import Settings
+
 logger = get_logger(__name__)
 
 
@@ -17,7 +19,9 @@ def main() -> int:
     logger.info("Starting ingestion pipeline")
 
     try:
-        run_indexing()
+        settings = Settings.from_yaml_absolute_path()
+        
+        run_indexing(settings)
         logger.info("Ingestion completed successfully")
         return 0
 

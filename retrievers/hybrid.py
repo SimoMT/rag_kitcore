@@ -1,40 +1,63 @@
-from langchain_classic.retrievers import EnsembleRetriever
-
-
 def get_final_context(resources, query: str, top_n: int = 5):
     vector_store = resources["vector_store"]
     bm25 = resources["bm25"]
     reranker = resources["reranker"]
 
-    # Qdrant retriever (Runnable)
-    v_retriever = vector_store.as_retriever(search_kwargs={"k": 25})
-
-    # BM25 retriever (Runnable)
-    bm25.k = 25
-
-    ensemble = EnsembleRetriever(
-        retrievers=[bm25, v_retriever],
-        weights=[0.4, 0.6],
-    )
-
+    # -----------------------------
+    # 1. Vector search (Qdrant)
+    # -----------------------------
     try:
-        initial_docs = ensemble.invoke(query)
+        v_results = vector_store.similarity_search(query, k=25)
     except Exception:
+        v_results = []
+
+    # -----------------------------
+    # 2. BM25 search
+    # -----------------------------
+    try:
+        bm25.k = 25
+        bm25_results = bm25.get_relevant_documents(query)
+    except Exception:
+        bm25_results = []
+
+    # -----------------------------
+    # 3. Weighted merge
+    # -----------------------------
+    # You can tune these later or move them to config
+    w_bm25 = 0.4
+    w_vector = 0.6
+
+    scored_docs = {}
+
+    # Score BM25 docs
+    for doc in bm25_results:
+        scored_docs.setdefault(doc.page_content, {"doc": doc, "score": 0})
+        scored_docs[doc.page_content]["score"] += w_bm25
+
+    # Score vector docs
+    for doc in v_results:
+        scored_docs.setdefault(doc.page_content, {"doc": doc, "score": 0})
+        scored_docs[doc.page_content]["score"] += w_vector
+
+    # Convert to list
+    merged_docs = [v["doc"] for v in scored_docs.values()]
+
+    if not merged_docs:
         return []
 
-    if not initial_docs:
-        return []
-
-    # Deduplicate
-    unique_docs = {doc.page_content: doc for doc in initial_docs}
-    docs = list(unique_docs.values())
-
-    # Rerank
-    pairs = [[query, d.page_content] for d in docs]
+    # -----------------------------
+    # 4. Rerank with CrossEncoder
+    # -----------------------------
+    pairs = [[query, d.page_content] for d in merged_docs]
     scores = reranker.predict(pairs)
 
-    for d, s in zip(docs, scores):
+    for d, s in zip(merged_docs, scores):
         d.metadata["rerank_score"] = float(s)
 
-    reranked = sorted(docs, key=lambda x: x.metadata["rerank_score"], reverse=True)
+    reranked = sorted(
+        merged_docs,
+        key=lambda x: x.metadata["rerank_score"],
+        reverse=True,
+    )
+
     return reranked[:top_n]

@@ -1,0 +1,10 @@
+extractor:
+  system: |
+    Sei un esperto programmatore di sviluppo web
+
+    CONTESTO:
+    {context}
+
+  human: |
+    DOMANDA UTENTE:
+    {question}
