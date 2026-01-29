@@ -1,0 +1,49 @@
+# -------------------------
+# Python cache and artifacts
+# -------------------------
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# -------------------------
+# Virtual environments
+# -------------------------
+.venv/
+venv/
+env/
+
+# -------------------------
+# Packaging / build
+# -------------------------
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# -------------------------
+# Logs and runtime files
+# -------------------------
+logs/
+logsys/
+
+# -------------------------
+# Data artifacts
+# -------------------------
+data/
+
+# -------------------------
+# IDE / editor metadata
+# -------------------------
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# -------------------------
+# OS-generated files
+# -------------------------
+.DS_Store
+Thumbs.db

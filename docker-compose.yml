@@ -5,7 +5,9 @@ services:
       - "8000:8000"
     environment:
       VECTOR_DB: "qdrant"
-      LLM_PROVIDER: "openai"
+      LLM_PROVIDER: "ollama"
+      OLLAMA_HOST: "host.docker.internal"
+      OLLAMA_PORT: "11434"
     volumes:
       - ./data:/app/data
     depends_on:
@@ -21,16 +23,17 @@ services:
       - qdrant_data:/qdrant/storage
     restart: unless-stopped
 
-  vllm:
-    image: vllm/vllm-openai:latest
-    environment:
-      - VLLM_CPU_ONLY=1
-    command: >
-      --model TinyLlama/TinyLlama-1.1B-Chat-v1.0
-      --port 8001
-    ports:
-      - "8001:8001"
-    restart: unless-stopped
+  # vllm:
+  #   image: rocm/vllm-openai:latest
+  #   environment:
+  #     - VLLM_CPU_ONLY=1
+  #   command: >
+  #     --model TinyLlama/TinyLlama-1.1B-Chat-v1.0
+  #     --dtype float32
+  #     --port 8001
+  #   ports:
+  #     - "8001:8001"
+  #   restart: unless-stopped
 
 volumes:
   qdrant_data:

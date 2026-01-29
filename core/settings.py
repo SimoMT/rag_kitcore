@@ -1,6 +1,9 @@
+import os
+import yaml
+
 from pydantic import BaseModel
 from pydantic_settings import BaseSettings, SettingsConfigDict
-import yaml
+
 
 
 # -----------------------------
@@ -81,3 +84,27 @@ class Settings(BaseSettings):
 
         data["prompts"] = prompts
         return cls(**data)
+
+    @classmethod
+    def from_yaml_absolute_path(cls, path="config/config.yaml", prompts_path="config/prompts.yaml"):
+        with open(path, "r") as f:
+            data = yaml.safe_load(f)
+
+        with open(prompts_path, "r") as f:
+            prompts = yaml.safe_load(f)
+
+        data["prompts"] = prompts
+
+        settings = cls(**data)
+
+        config_dir = os.path.dirname(os.path.abspath(path))
+        project_root = os.path.dirname(config_dir)
+
+
+        if not os.path.isabs(settings.paths.data_dir):
+            settings.paths.data_dir = os.path.join(project_root, settings.paths.data_dir)
+
+        if not os.path.isabs(settings.paths.bm25_index):
+            settings.paths.bm25_index = os.path.join(project_root, settings.paths.bm25_index)
+
+        return settings

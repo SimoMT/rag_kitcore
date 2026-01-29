@@ -11,7 +11,7 @@ from logsys import get_logger
 from rag.indexing.processor import (
     merge_small_chunks_documents,
     merge_adjacent_table_chunks_documents,
-    is_index_chunk,
+    is_index_chunk,enforce_max_tokens,
 )
 
 logger = get_logger(__name__)
@@ -77,6 +77,13 @@ def chunk_markdown(
 
         # 5. Merge adjacent table chunks
         final_docs = merge_adjacent_table_chunks_documents(merged)
+
+        # 6. Enforce max token limit AFTER all merging
+        final_docs = enforce_max_tokens(final_docs, tokenizer, max_tokens=512)
+        
+        for d in final_docs[:5]:
+            tok_count = len(tokenizer.encode(d.page_content))
+            logger.debug(f"Sample chunk token length: {tok_count}")
 
         logger.info("Final chunk count: %d", len(final_docs))
         return final_docs

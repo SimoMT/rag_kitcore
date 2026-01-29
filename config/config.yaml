@@ -1,9 +1,9 @@
 rag:
-  chunk_size: 500
+  chunk_size: 250
   chunk_overlap: 50
 
 paths:
-  data_dir: "data/"
+  data_dir: "data\\"
   bm25_index: "data/bm25_index"
   qdrant_url: "http://localhost:6333"
 
@@ -15,8 +15,8 @@ models:
   reranker_model: "cross-encoder/ms-marco-MiniLM-L-6-v2"
 
 llm:
-  backend: "vllm"
-  model: "TinyLlama/TinyLlama-1.1B-Chat-v1.0"
+  backend: "ollama"     # "vllm"
+  model: "llama3.2:1b"  # "TinyLlama/TinyLlama-1.1B-Chat-v1.0"
   temperature: 0.2
   max_tokens: 1024
 

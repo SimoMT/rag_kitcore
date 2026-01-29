@@ -173,3 +173,40 @@ def is_index_chunk(
             return True
 
     return False
+
+# ---------------------------------------------------------------------------
+# Enforxe Max token
+# ---------------------------------------------------------------------------
+
+def enforce_max_tokens(docs, tokenizer, max_tokens=512, safety_margin=50):
+    """
+    Ensure no chunk exceeds the embedding model's max token limit.
+    If a chunk is too long, re-split it using the same tokenizer.
+    """
+    final_docs = []
+
+    for d in docs:
+        tokens = tokenizer.encode(d.page_content)
+
+        if len(tokens) <= max_tokens:
+            final_docs.append(d)
+            continue
+
+        # Re-split oversized chunk
+        start = 0
+        step = max_tokens - safety_margin  # leave room for headers, etc.
+
+        while start < len(tokens):
+            end = start + step
+            chunk_tokens = tokens[start:end]
+            chunk_text = tokenizer.decode(chunk_tokens)
+
+            new_doc = Document(
+                page_content=chunk_text,
+                metadata=d.metadata.copy()
+            )
+            final_docs.append(new_doc)
+
+            start += step
+
+    return final_docs

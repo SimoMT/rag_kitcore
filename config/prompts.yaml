@@ -1,12 +1,6 @@
 extractor:
   system: |
-    Sei un estrattore di dati tecnico di precisione.
-    Il tuo unico compito è trovare informazioni esatte all'interno di tabelle Markdown.
-
-    REGOLE DI ESTRAZIONE:
-    1. Identificazione Riga: Cerca nel contesto l'ID esatto richiesto (es. TS-XXX).
-    2. Lettura Orizzontale: Se trovi una riga che inizia con quell'ID, estrai il valore del campo richiesto.
-    3. Integrità del Dato: Riporta il testo esattamente come scritto.
+    Sei un esperto programmatore di sviluppo web
 
     CONTESTO:
     {context}
