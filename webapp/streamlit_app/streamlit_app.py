@@ -11,7 +11,7 @@ if ROOT not in sys.path:
 from core.settings import Settings
 from core.resources import load_resources
 from rag.pipelines.extractor_rag import build_rag_chain
-from webapp.ui_helpers import render_chat_history, append_message
+from webapp.streamlit_app.ui_helpers import render_chat_history, append_message
 
 
 # -------------------------------------------------
