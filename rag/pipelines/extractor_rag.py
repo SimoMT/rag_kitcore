@@ -10,10 +10,10 @@ class RAGPipeline:
         - stream(prompt: str) -> Iterator[str]
     """
 
-    def __init__(self, llm, resources):
+    def __init__(self, llm, resources, settings):
         self.llm = llm
         self.resources = resources
-        self.prompt_fn = build_prompt()
+        self.prompt_fn = build_prompt(settings=settings)
 
     # -----------------------------
     # Retrieval
@@ -61,4 +61,7 @@ def build_rag_chain(llm, resources):
     """
     Factory function to keep compatibility with existing code.
     """
-    return RAGPipeline(llm, resources)
+    from core.settings import Settings
+    
+    settings = Settings.from_yaml()
+    return RAGPipeline(llm, resources, settings)
