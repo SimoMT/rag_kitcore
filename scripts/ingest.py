@@ -1,16 +1,14 @@
-#!/usr/bin/env python3
-
 import sys
-from logsys import get_logger
-from rag.indexing.pipeline import run_indexing
-from core.exceptions import (
+from rag_kitcore.logsys.logger import get_logger
+from rag_kitcore.rag.indexing.pipeline import run_indexing
+from rag_kitcore.core.settings import Settings
+from rag_kitcore.core.exceptions import (
     DocumentConversionError,
     ChunkingError,
     VectorStoreError,
     RAGError,
 )
 
-from core.settings import Settings
 
 logger = get_logger(__name__)
 
@@ -19,7 +17,7 @@ def main() -> int:
     logger.info("Starting ingestion pipeline")
 
     try:
-        settings = Settings.from_yaml_absolute_path()
+        settings = Settings.from_yaml()
         
         run_indexing(settings)
         logger.info("Ingestion completed successfully")

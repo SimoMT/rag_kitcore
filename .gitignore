@@ -27,7 +27,6 @@ dist/
 # Logs and runtime files
 # -------------------------
 logs/
-logsys/
 
 # -------------------------
 # Data artifacts

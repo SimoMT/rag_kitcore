@@ -1,34 +1,40 @@
 [project]
 name = "rag_kitcore"
-version = "0.1.0"
-description = "Local, privacy-first RAG framework with hybrid retrieval and Ollama"
-requires-python = ">=3.12"
-authors = [{ name = "Simone" }]
+version = "0.0.1"
+description = "Modular RAG indexing and retrieval toolkit"
+requires-python = ">=3.10,<4.0"
+authors = [{ name = "Simone Cardis" }]
 
 dependencies = [
-    # Core RAG stack
     "sentence-transformers",
     "qdrant-client",
     "rank-bm25",
     "langchain",
     "langchain-community",
+    "langchain_huggingface",
     "langchain-core",
     "langchain-ollama",
     "langchain-openai",
-
-    # Embeddings & reranker
     "numpy",
-    "scikit-learn",
-
-    # Web UI
-    "streamlit",
-
-    # Config & utilities
     "pydantic",
-    "python-dotenv",
+    "pydantic-settings",
     "pyyaml",
     "requests",
+    "python-docx",
+    "docling",
 ]
+
+[tool.poetry]
+packages = [
+    { include = "rag_kitcore", from = "src" }
+]
+
+[tool.poetry.scripts]
+rag-index = "rag_kitcore.rag.indexing.pipeline:run_indexing"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
 
 [tool.ruff]
 line-length = 100
