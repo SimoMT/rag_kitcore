@@ -4,10 +4,11 @@ rag:
 
 paths:
   data_dir: "data\\"
-  bm25_index: "data/bm25_index"
+  bm25_index: "data\\bm25_index"
   qdrant_url: "http://localhost:6333"
 
 vectorstore:
+  backend: "qdrant"
   collection_name: "rag_collection"
 
 models:

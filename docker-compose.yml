@@ -21,15 +21,14 @@ services:
     ports:
       - "8000:8000"
     environment:
-      QDRANT_URL: "http://qdrant:6333"
       OLLAMA_HOST: "host.docker.internal"
       OLLAMA_PORT: "11434"
+      QDRANT_URL: "http://qdrant:6333"
     volumes:
       - ./:/app
     depends_on:
       - qdrant
     restart: unless-stopped
-
 
   qdrant:
     image: qdrant/qdrant:v1.16
