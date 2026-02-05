@@ -43,16 +43,21 @@ class BackendOllama(BaseModel):
 class BackendsConfig(BaseModel):
     vllm: BackendVLLM
     ollama: BackendOllama
+    device: str = "cpu"
 
-
-class PromptSection(BaseModel):
+class ExtractorPrompt(BaseModel):
     system: str
     human: str
 
 class PromptsConfig(BaseModel):
-    extractor: PromptSection
-    # qa: PromptSection
-    # summarizer: PromptSection
+    extractor: ExtractorPrompt
+
+
+class RetrievalConfig(BaseModel):
+    top_k_dense: int = 20
+    top_k_sparse: int = 20
+    top_k_rerank: int = 5
+    fusion_method: str = "reciprocal_rank"  # or "weighted"
 
 # -----------------------------
 # Main Settings
@@ -66,7 +71,8 @@ class Settings(BaseSettings):
     llm: LLMConfig
     backends: BackendsConfig
     prompts: PromptsConfig
-
+    retrieval: RetrievalConfig
+    
     model_config = SettingsConfigDict(env_file=".env")
 
     @classmethod

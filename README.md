@@ -59,9 +59,23 @@ rag_kitcore/
 │   └── prompts.yaml
 └── src/
     └── rag_kitcore/
+        ├── logsys/
         ├── rag/
+        │   └── conversion/
+        │   └── embedding/
         │   └── indexing/
+        │   └── pipelines/
+        │   └── prompts/
+        │   └── retrievers/
         └── core/
+            └── bm_25/
+            └── device/
+            └── embeddings/
+            └── llm/
+            └── rerankers/
+            └── vectorstore/
+            └── exceptions.py
+            └── settings.py
 ```
 
 ---

@@ -1,0 +1,66 @@
+# Dockerfile.backend_gpu
+# GPU-enabled backend for rag_kitcore using Poetry
+
+FROM nvidia/cuda:12.1.0-runtime-ubuntu22.04
+
+# ----------------------------
+# System setup
+# ----------------------------
+ENV DEBIAN_FRONTEND=noninteractive
+ENV PYTHONUNBUFFERED=1
+ENV POETRY_VIRTUALENVS_CREATE=false
+
+WORKDIR /app
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    python3 python3-pip python3-venv \
+    build-essential \
+    git \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Make python3 the default
+RUN ln -s /usr/bin/python3 /usr/bin/python
+
+# Upgrade pip
+RUN python -m pip install --no-cache-dir --upgrade pip
+
+# ----------------------------
+# Install Poetry
+# ----------------------------
+RUN pip install --no-cache-dir poetry
+
+# ----------------------------
+# Copy dependency files first (cache-friendly)
+# ----------------------------
+COPY pyproject.toml poetry.lock ./
+
+# ----------------------------
+# Install GPU ML stack via Poetry
+# Poetry will correctly resolve:
+# - torch==2.2.x (CUDA 12.1)
+# - transformers
+# - sentence-transformers
+# - langchain ecosystem
+# - fastapi, uvicorn, httpx, etc.
+# ----------------------------
+RUN poetry install --no-root --only main
+
+# ----------------------------
+# Copy your project code
+# ----------------------------
+COPY src ./src
+COPY config ./config
+
+# Install your project as a package
+RUN poetry install --only main
+
+# ----------------------------
+# Expose API port
+# ----------------------------
+EXPOSE 8001
+
+# ----------------------------
+# Run FastAPI backend
+# ----------------------------
+CMD ["poetry", "run", "uvicorn", "rag_kitcore.api.main:app", "--host", "0.0.0.0", "--port", "8001"]

@@ -1,5 +1,5 @@
 from typing import List
-from langchain_core.documents import Document
+from rag_kitcore.core.types import Document
 from rag_kitcore.core.rerankers.base import BaseReranker
 
 

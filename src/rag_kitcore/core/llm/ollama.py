@@ -51,3 +51,6 @@ class OllamaClient(BaseLLM):
             content = chunk["message"].get("content", "")
             if content:
                 yield content
+
+    def __call__(self, prompt: str, system_prompt: Optional[str] = None):
+        return self.generate(prompt, system_prompt)

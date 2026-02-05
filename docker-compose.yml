@@ -1,55 +1,85 @@
 services:
-  webapp:
-    build: .
-    ports:
-      - "8000:8000"
-    environment:
-      VECTOR_DB: "qdrant"
-      LLM_PROVIDER: "ollama"
-      OLLAMA_HOST: "host.docker.internal"
-      OLLAMA_PORT: "11434"
-    volumes:
-      - ./data:/app/data
-    depends_on:
-      - qdrant
-    restart: unless-stopped
-
-  chainlit:
+  ollama:
     build:
       context: .
-      dockerfile: Dockerfile.chainlit
+      dockerfile: ./webapp/ollama/Dockerfile.ollama
     ports:
-      - "8000:8000"
-    environment:
-      OLLAMA_HOST: "host.docker.internal"
-      OLLAMA_PORT: "11434"
-      QDRANT_URL: "http://qdrant:6333"
+      - "11434:11434"
     volumes:
-      - ./:/app
-    depends_on:
-      - qdrant
+      - ollama_data:/root/.ollama
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:11434/api/tags"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
 
   qdrant:
-    image: qdrant/qdrant:v1.16
+    user: "0:0"
+    build: 
+      context: .
+      dockerfile: ./vectorstore/qdrant/Dockerfile.qdrant
     ports:
       - "6333:6333"
       - "6334:6334"
     volumes:
       - qdrant_data:/qdrant/storage
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:6333/healthz"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
 
-  # vllm:
-  #   image: rocm/vllm-openai:latest
-  #   environment:
-  #     - VLLM_CPU_ONLY=1
-  #   command: >
-  #     --model TinyLlama/TinyLlama-1.1B-Chat-v1.0
-  #     --dtype float32
-  #     --port 8001
-  #   ports:
-  #     - "8001:8001"
-  #   restart: unless-stopped
+  chainlit:
+    build:
+      context: .
+      dockerfile: ./webapp/chainlit/Dockerfile.chainlit
+    ports:
+      - "8000:8000"
+    environment:
+      OLLAMA_HOST: "ollama"
+      OLLAMA_PORT: "11434"
+      QDRANT_URL: "http://qdrant:6333"
+    volumes:
+      - ./:/app
+    depends_on:
+      ollama:
+        condition: service_healthy
+      qdrant:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: .
+      dockerfile: ./Dockerfile.backend
+    ports:
+      - "8001:8001"
+    depends_on:
+      - qdrant
+      - ollama
+
+  backend-gpu:
+    build:
+      context: .
+      dockerfile: ./Dockerfile.backend_gpu
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - capabilities: ["gpu"]
+    environment:
+      CUDA_VISIBLE_DEVICES: "0"
+    ports:
+      - "8001:8001"
 
 volumes:
   qdrant_data:
+  ollama_data:

@@ -1,33 +1,36 @@
-[project]
+[tool.poetry]
 name = "rag_kitcore"
 version = "0.0.1"
 description = "Modular RAG indexing and retrieval toolkit"
-requires-python = ">=3.10,<4.0"
-authors = [{ name = "Simone Cardis" }]
-
-dependencies = [
-    "sentence-transformers",
-    "qdrant-client",
-    "rank-bm25",
-    "langchain",
-    "langchain-community",
-    "langchain_huggingface",
-    "langchain-core",
-    "langchain-ollama",
-    "langchain-openai",
-    "numpy",
-    "pydantic",
-    "pydantic-settings",
-    "pyyaml",
-    "requests",
-    "python-docx",
-    "docling",
-]
-
-[tool.poetry]
+authors = ["Simone"]
+readme = "README.md"
 packages = [
     { include = "rag_kitcore", from = "src" }
 ]
+
+[tool.poetry.dependencies]
+python = ">=3.10,<4.0"
+
+sentence-transformers = "*"
+qdrant-client = "*"
+rank-bm25 = "*"
+langchain = "*"
+langchain-community = "*"
+langchain_huggingface = "*"
+langchain-core = "*"
+langchain-ollama = "*"
+langchain-openai = "*"
+langchain-qdrant = "*"
+numpy = "*"
+pydantic = "*"
+pydantic-settings = "*"
+pyyaml = "*"
+requests = "*"
+python-docx = "*"
+docling = "*"
+httpx = "*"
+fastapi = "^0.115.0"
+uvicorn = { extras = ["standard"], version = "^0.30.0" }
 
 [tool.poetry.scripts]
 rag-index = "rag_kitcore.rag.indexing.pipeline:run_indexing"
