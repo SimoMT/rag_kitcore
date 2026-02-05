@@ -1,11 +1,8 @@
-from .vllm import VLLMClient
-from .ollama import OllamaClient
+from rag_kitcore.core.llm.ollama import OllamaClient
 
 def create_llm(settings):
     backend = settings.llm.backend.lower()
 
-    if backend == "vllm":
-        return VLLMClient(settings)
     if backend == "ollama":
         return OllamaClient(settings)
 

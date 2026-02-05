@@ -1,4 +1,4 @@
-from rag_kitcore.rag.prompts.extractor import build_prompt
+from rag_kitcore.rag.prompting.extractor import build_prompt
 
 
 class RAGPipeline:

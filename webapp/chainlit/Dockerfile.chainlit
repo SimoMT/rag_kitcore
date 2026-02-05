@@ -1,0 +1,11 @@
+FROM python:3.11-slim
+
+WORKDIR /app
+
+COPY webapp/chainlit /app/webapp/chainlit
+
+RUN pip install --no-cache-dir chainlit httpx
+
+EXPOSE 8000
+
+ENTRYPOINT ["chainlit", "run", "webapp/chainlit/app.py", "--host", "0.0.0.0", "--port", "8000"]

@@ -1,6 +1,7 @@
 from typing import List
 from langchain_community.retrievers import BM25Retriever
-from langchain_core.documents import Document
+from rag_kitcore.core.types import Document
+
 
 
 class BM25RetrieverWrapper:

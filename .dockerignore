@@ -1,8 +1,47 @@
+# Python
 __pycache__/
 *.pyc
 *.pyo
 *.pyd
+*.egg-info/
 .env
-.git
+
+# Virtual environments
+venv/
+.venv/
+env/
+ENV/
+
+# Git
+.git/
 .gitignore
-tests/
+
+# Docker
+Dockerfile*
+docker-compose*
+*.log
+
+# IDEs / Editors
+.vscode/
+.idea/
+*.swp
+
+# Node (if any UI uses JS)
+node_modules/
+
+# Data / Models
+qdrant_data/
+ollama_data/
+models/
+*.bin
+*.gguf
+*.pt
+*.safetensors
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Build artifacts
+dist/
+build/
