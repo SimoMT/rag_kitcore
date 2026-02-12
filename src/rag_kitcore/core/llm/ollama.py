@@ -1,7 +1,5 @@
-# core/llm/ollama.py
-
 from typing import Generator, Optional
-from .base import BaseLLM
+from rag_kitcore.core.llm.base import BaseLLM
 import ollama
 
 
@@ -10,6 +8,9 @@ class OllamaClient(BaseLLM):
         self.model = settings.llm.model
         self.temperature = settings.llm.temperature
         self.max_tokens = settings.llm.max_tokens
+        self.client = ollama.Client(
+            host=settings.backends.ollama.base_url
+        )
 
     def generate(self, prompt: str, system_prompt: Optional[str] = None) -> str:
         messages = []
@@ -17,7 +18,7 @@ class OllamaClient(BaseLLM):
             messages.append({"role": "system", "content": system_prompt})
         messages.append({"role": "user", "content": prompt})
 
-        response = ollama.chat(
+        response = self.client.chat(
             model=self.model,
             messages=messages,
             options={
@@ -37,7 +38,7 @@ class OllamaClient(BaseLLM):
             messages.append({"role": "system", "content": system_prompt})
         messages.append({"role": "user", "content": prompt})
 
-        stream = ollama.chat(
+        stream = self.client.chat(
             model=self.model,
             messages=messages,
             stream=True,

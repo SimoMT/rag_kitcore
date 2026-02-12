@@ -31,17 +31,10 @@ class LLMConfig(BaseModel):
     temperature: float = 0.2
     max_tokens: int = 1024
 
-
-class BackendVLLM(BaseModel):
-    base_url: str
-
-
 class BackendOllama(BaseModel):
     base_url: str
 
-
 class BackendsConfig(BaseModel):
-    vllm: BackendVLLM
     ollama: BackendOllama
     device: str = "cpu"
 
@@ -51,7 +44,6 @@ class ExtractorPrompt(BaseModel):
 
 class PromptsConfig(BaseModel):
     extractor: ExtractorPrompt
-
 
 class RetrievalConfig(BaseModel):
     top_k_dense: int = 20
@@ -72,7 +64,7 @@ class Settings(BaseSettings):
     backends: BackendsConfig
     prompts: PromptsConfig
     retrieval: RetrievalConfig
-    
+
     model_config = SettingsConfigDict(env_file=".env")
 
     @classmethod

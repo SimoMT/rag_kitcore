@@ -3,9 +3,9 @@ rag:
   chunk_overlap: 50
 
 paths:
-  data_dir: "data\\"
-  bm25_index: "data\\bm25_index"
-  qdrant_url: "http://localhost:6333"
+  data_dir: "data/"
+  bm25_index: "data/bm25_index"
+  qdrant_url: "http://qdrant:6333"
 
 vectorstore:
   backend: "qdrant"
@@ -23,10 +23,10 @@ llm:
 
 backends:
   ollama:
-    base_url: "http://localhost:11434"
+    base_url: "http://ollama:11434"
 
 retrieval:
   top_k_dense: 20
   top_k_sparse: 20
   top_k_rerank: 5
-  fusion_method: "reciprocal_rank"   # or "weighted"
+  fusion_method: "reciprocal_rank"

@@ -87,3 +87,23 @@ LLM orchestration: **in progress**
 
 ---
 
+## 🔢 ML Stack Versions (Pinned)
+
+The backend uses a fully pinned ML stack to ensure reproducible builds and stable behavior across CPU and GPU environments.
+
+| Component               | Version     | Notes |
+|-------------------------|-------------|-------|
+| PyTorch (CPU)           | 2.2.0       | Official CPU wheels |
+| Transformers            | 4.37.2      | Compatible with ST 2.2.2 |
+| Tokenizers              | 0.15.1      | Matches Transformers 4.37 |
+| SentenceTransformers    | 2.2.2       | Stable, CrossEncoder supported |
+| HuggingFace Hub         | 0.19.4      | Required for ST 2.2.2 (`cached_download`) |
+| SentencePiece           | 0.1.99      | Required for HF models |
+| scikit-learn            | 1.3.2       | Required for ST |
+| nltk                    | 3.8.1       | Required for ST |
+| Qdrant Client           | 1.7.3       | Matches Qdrant 1.7.x |
+| FastAPI                 | 0.109.0     | Backend API |
+| Uvicorn                 | 0.27.0      | ASGI server |
+
+This stack is intentionally conservative to ensure stability during development.  
+A future upgrade to SentenceTransformers 3.x will be handled separately.

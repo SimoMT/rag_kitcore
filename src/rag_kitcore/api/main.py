@@ -1,5 +1,3 @@
-# src/rag_kitcore/api/main.py
-
 from fastapi import FastAPI
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
@@ -7,13 +5,34 @@ from pydantic import BaseModel
 from rag_kitcore.core.settings import Settings
 from rag_kitcore.rag.pipelines.answer import answer_stream
 
-settings = Settings() # type: ignore[call-arg]
+
 app = FastAPI()
+settings = Settings.from_yaml()
+
+@app.get("/health")
+def health():
+    return {"status": "ok"}
+
+@app.get("/info")
+def info():
+    return {
+        "status": "ok",
+        "device": settings.backends.device,
+        "embedding_model": settings.models.embedding_model,
+        "reranker_model": settings.models.reranker_model,
+        "qdrant_url": settings.paths.qdrant_url,
+        "ollama_url": settings.backends.ollama.base_url,
+        "vectorstore_backend": settings.vectorstore.backend,
+        "collection_name": settings.vectorstore.collection_name,
+    }
 
 
 class Query(BaseModel):
     question: str
 
+@app.get("/")
+def root(): 
+    return {"status": "backend running", "message": "Hello!"}
 
 @app.post("/rag")
 async def rag_answer(payload: Query):

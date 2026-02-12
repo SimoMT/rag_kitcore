@@ -14,10 +14,9 @@ services:
       timeout: 5s
       retries: 5
 
-
   qdrant:
     user: "0:0"
-    build: 
+    build:
       context: .
       dockerfile: ./vectorstore/qdrant/Dockerfile.qdrant
     ports:
@@ -32,41 +31,24 @@ services:
       timeout: 5s
       retries: 20
 
-  chainlit:
-    build:
-      context: .
-      dockerfile: ./webapp/chainlit/Dockerfile.chainlit
-    ports:
-      - "8000:8000"
-    environment:
-      OLLAMA_HOST: "ollama"
-      OLLAMA_PORT: "11434"
-      QDRANT_URL: "http://qdrant:6333"
-    volumes:
-      - ./:/app
-    depends_on:
-      ollama:
-        condition: service_healthy
-      qdrant:
-        condition: service_healthy
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
   backend:
+    image: rag_kitcore-backend:latest
+    profiles: ["cpu"]
     build:
       context: .
       dockerfile: ./Dockerfile.backend
     ports:
       - "8001:8001"
     depends_on:
-      - qdrant
-      - ollama
-
+      qdrant:
+        condition: service_healthy
+      ollama:
+        condition: service_healthy
+    restart: unless-stopped
+    volumes:
+      - ./data:/app/data
   backend-gpu:
+    profiles: ["gpu"]
     build:
       context: .
       dockerfile: ./Dockerfile.backend_gpu
@@ -79,6 +61,47 @@ services:
       CUDA_VISIBLE_DEVICES: "0"
     ports:
       - "8001:8001"
+    volumes:
+      - ./data:/app/data
+
+  chainlit:
+    image: rag_kitcore-chainlit:latest
+    build:
+      context: .
+      dockerfile: ./webapp/chainlit/Dockerfile.chainlit
+    ports:
+      - "8000:8000"
+    environment:
+      OLLAMA_HOST: "ollama"
+      OLLAMA_PORT: "11434"
+      QDRANT_URL: "http://qdrant:6333"
+      BACKEND_URL: "http://backend:8001"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      ollama:
+        condition: service_healthy
+      qdrant:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+  indexer:
+    build:
+      context: .
+      dockerfile: ./Dockerfile.indexer
+    command: python /app/scripts/ingest.py
+    volumes:
+      - ./data:/app/data
+    depends_on:
+      qdrant:
+        condition: service_healthy
+      ollama:
+        condition: service_healthy
+
 
 volumes:
   qdrant_data:
