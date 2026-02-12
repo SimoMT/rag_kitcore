@@ -4,9 +4,6 @@ version = "0.0.1"
 description = "Modular RAG indexing and retrieval toolkit"
 authors = ["Simone"]
 readme = "README.md"
-packages = [
-    { include = "rag_kitcore" }
-]
 
 [tool.poetry.dependencies]
 python = ">=3.10,<4.0"
