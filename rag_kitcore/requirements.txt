@@ -1,0 +1,13 @@
+langchain==1.2.9
+langchain-community==0.4.1
+langchain-core==1.2.9
+langchain-qdrant==1.1.0
+sentence-transformers==5.2.2
+qdrant-client==1.15.1
+rank-bm25==0.2.2
+numpy==2.2.6
+scikit-learn==1.7.2
+tqdm==4.67.3
+PyYAML==6.0.3
+pydantic==2.12.5
+pydantic-settings==2.12.0
