@@ -4,9 +4,6 @@ version = "0.0.1"
 description = "Modular RAG indexing and retrieval toolkit"
 authors = ["Simone"]
 readme = "README.md"
-packages = [
-    { include = "rag_kitcore", from = "src" }
-]
 
 [tool.poetry.dependencies]
 python = ">=3.10,<4.0"
@@ -28,9 +25,6 @@ requests = ">=2.32,<3.0"
 python-docx = ">=1.1,<2.0"
 docling = "*"
 httpx = ">=0.28,<1.0"
-
-fastapi = "^0.115.0"
-uvicorn = { extras = ["standard"], version = "^0.30.0" }
 
 [tool.poetry.scripts]
 rag-index = "rag_kitcore.rag.indexing.pipeline:run_indexing"

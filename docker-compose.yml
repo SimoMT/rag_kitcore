@@ -32,11 +32,10 @@ services:
       retries: 20
 
   backend:
-    image: rag_kitcore-backend:latest
-    profiles: ["cpu"]
     build:
       context: .
-      dockerfile: ./Dockerfile.backend
+      dockerfile: ./backend/Dockerfile.backend
+    image: rag_kitcore-backend:latest
     ports:
       - "8001:8001"
     depends_on:
@@ -47,11 +46,12 @@ services:
     restart: unless-stopped
     volumes:
       - ./data:/app/data
+
   backend-gpu:
     profiles: ["gpu"]
     build:
       context: .
-      dockerfile: ./Dockerfile.backend_gpu
+      dockerfile: ./backend/Dockerfile.backend_gpu
     deploy:
       resources:
         reservations:
@@ -65,10 +65,10 @@ services:
       - ./data:/app/data
 
   chainlit:
-    image: rag_kitcore-chainlit:latest
     build:
       context: .
       dockerfile: ./webapp/chainlit/Dockerfile.chainlit
+    image: rag_kitcore-chainlit:latest
     ports:
       - "8000:8000"
     environment:
@@ -89,10 +89,11 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+
   indexer:
     build:
       context: .
-      dockerfile: ./Dockerfile.indexer
+      dockerfile: ./indexer/Dockerfile.indexer
     command: python /app/scripts/ingest.py
     volumes:
       - ./data:/app/data
@@ -101,7 +102,6 @@ services:
         condition: service_healthy
       ollama:
         condition: service_healthy
-
 
 volumes:
   qdrant_data:

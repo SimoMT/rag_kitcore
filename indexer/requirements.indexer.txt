@@ -1,0 +1,5 @@
+# heavy ML dependencies
+-r ../rag_kitcore/requirements.txt
+
+# indexer-specific tools
+tqdm==4.67.3
