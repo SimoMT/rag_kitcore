@@ -21,13 +21,12 @@ RUN pip install --no-cache-dir -r requirements.backend.txt
 # ----------------------------
 # Install rag_kitcore package
 # ----------------------------
-# Copy the core library into the image
-COPY rag_kitcore/ rag_kitcore/
-COPY pyproject.toml rag_kitcore/pyproject.toml
-COPY README.md rag_kitcore/README.md
+COPY config/ config/
+COPY rag_kitcore/ src/rag_kitcore/
+COPY pyproject.toml src/pyproject.toml
+COPY README.md src/README.md
 
-# Install rag_kitcore (this pulls its own heavy ML deps)
-RUN pip install --no-cache-dir -e rag_kitcore
+RUN pip install --no-cache-dir -e src
 
 # ----------------------------
 # Copy backend application code
